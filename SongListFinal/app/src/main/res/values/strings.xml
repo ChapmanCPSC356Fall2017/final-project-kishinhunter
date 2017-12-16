@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SongList</string>
+    <string name="is_this_song_a_favorite">Is This Song a Favorite?</string>
+</resources>
