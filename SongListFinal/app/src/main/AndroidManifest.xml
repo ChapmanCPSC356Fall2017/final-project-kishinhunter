@@ -15,6 +15,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".fragments.SongInfoFragment" android:label="Song Details" android:screenOrientation="portrait"/>
-        <activity android:name=".fragments.New_Song" android:screenOrientation="portrait"/>
+        <activity android:name=".fragments.New_Song" android:screenOrientation="portrait" android:label="Create New Song"/>
     </application>
 </manifest>

@@ -8,8 +8,14 @@
         android:id="@+id/create"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
+        android:layout_gravity="center"
         android:text="Create New Song"/>
+    <CheckBox
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="Delete Selected Song"/>
     <CheckBox
         android:id="@+id/favorite_sort"
         android:layout_width="wrap_content"

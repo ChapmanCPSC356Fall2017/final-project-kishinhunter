@@ -10,13 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -33,6 +33,10 @@ public class MainActivity extends Activity
     boolean zero = false;
     Button button;
     ListAdapter listAdapter;
+    ListAdapter newlistadapter;
+    CheckBox checkBox;
+    ArrayList<Song_model> temp_songs_fave;
+    ArrayList<Song_model> empty;
 
     protected void onCreate(Bundle savedInstanceStates) {
         super.onCreate(savedInstanceStates);
@@ -42,59 +46,93 @@ public class MainActivity extends Activity
         {
             SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
             Gson gson = new Gson();
-            String json = sharedPreferences.getString("StoredArray", "");
+            String json = sharedPreferences.getString("StoredArray", null);
             songs = new ArrayList<>();
+            temp_songs_fave = new ArrayList<>();
             songs = gson.fromJson(json, new TypeToken<ArrayList<Song_model>>(){}.getType());
-            Song_model song_model = new Song_model("", "Songs", false);
-            if (songs == null)
-            {
-                songs = new ArrayList<Song_model>();
-                songs.add(song_model);
-            }
+
             listAdapter = new ListAdapter(this, songs);
             listView = (ListView) findViewById(R.id.list_viewID);
             listView.setAdapter(listAdapter);
             listView.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                    Intent intent = new Intent(MainActivity.this, SongInfoFragment.class);
-                    Song_model sm = songs.get(position);
-                    intent.putExtra("song", sm);
-                    startActivity(intent);
+                    CheckBox checkBox = findViewById(R.id.delete);
+                    if (checkBox.isChecked())
+                    {
+                        CheckBox checkBox1 = findViewById(R.id.favorite_sort);
+                        if (checkBox1.isChecked())
+                        {
+                            String s = temp_songs_fave.get(position).getName();
+                            temp_songs_fave.remove(position);
+                            newlistadapter.notifyDataSetChanged();
+                            for (int i =0; i<songs.size(); ++i)
+                            {
+                                if (songs.get(i).getName().equals(s))
+                                {
+                                    songs.remove(i);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            songs.remove(position);
+                            listAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    else
+                    {
+                        Intent intent = new Intent(MainActivity.this, SongInfoFragment.class);
+                        Song_model sm = songs.get(position);
+                        intent.putExtra("song", sm);
+                        startActivity(intent);
+                    }
                 }
             });
             button = (Button) findViewById(R.id.create);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    listView.setAdapter(listAdapter);
                     Intent intent = new Intent(MainActivity.this, New_Song.class);
                     startActivityForResult(intent, 1);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            listAdapter.notifyDataSetChanged();
+                    listAdapter.notifyDataSetChanged();
+                }
+            });
+            checkBox = (CheckBox) findViewById(R.id.favorite_sort);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b)
+                {
+                    if (checkBox.isChecked())
+                    {
+                        for (int i = 0; i<songs.size(); ++i)
+                        {
+                            if (songs.get(i).isChecked())
+                            {
+                                temp_songs_fave.add(songs.get(i));
+                            }
                         }
-                    });
+                        newlistadapter = new ListAdapter(MainActivity.this, temp_songs_fave);
+                        listView.setAdapter(newlistadapter);
+                        newlistadapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        temp_songs_fave.clear();
+                        listView.setAdapter(listAdapter);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
                 }
             });
             zero = true;
         }
-        else
-        {
-            final ListAdapter listAdapter = new ListAdapter(this, songs);
-            listView = (ListView) findViewById(R.id.list_viewID);
-            listView.setAdapter(listAdapter);
-            listView.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                    Intent intent = new Intent(MainActivity.this, SongInfoFragment.class);
-                    Song_model sm = songs.get(position);
-                    intent.putExtra("song", sm);
-                    startActivity(intent);
-                }
-            });
-        }
-
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent)
@@ -105,7 +143,9 @@ public class MainActivity extends Activity
             {
                 Song_model song_model = (Song_model) intent.getSerializableExtra("result");
                 songs.add(song_model);
+                temp_songs_fave.clear();
                 listAdapter.notifyDataSetChanged();
+                checkBox.setChecked(false);
             }
         }
     }
