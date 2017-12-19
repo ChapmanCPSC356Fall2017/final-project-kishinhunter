@@ -8,8 +8,9 @@ public class Song_model implements Serializable
     private String artist;
     private Boolean checked;
 
-    public Song_model(String name, String artist, boolean checked)
+    public Song_model(String name, String artist, boolean checked)  //Simple song object to get and set name, artist and favorite boolean
     {
+        //Can be called by this constructor
         this.name = name;
         this.artist = artist;
         this.checked = checked;

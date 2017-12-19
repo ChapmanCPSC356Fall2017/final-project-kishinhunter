@@ -32,7 +32,7 @@ public class New_Song extends FragmentActivity
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.toString().equals(""))
                 {
-                    button.setEnabled(false);
+                    button.setEnabled(false);   //Before text is in the EditText boxes, disable the button
                 }
                 else
                 {
@@ -42,7 +42,7 @@ public class New_Song extends FragmentActivity
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().equals(""))
+                if (charSequence.toString().equals("")) //Disable the button if the name EditText is empty
                 {
                     button.setEnabled(false);
                 }
@@ -61,11 +61,11 @@ public class New_Song extends FragmentActivity
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Song_model newsong = new Song_model(name.getText().toString(), artist.getText().toString(), checkBox.isChecked());
+                Song_model newsong = new Song_model(name.getText().toString(), artist.getText().toString(), checkBox.isChecked());  //Use constructor to create a song_model object from the values of the EditText
                 Intent returnintent = new Intent();
                 returnintent.putExtra("result", newsong);
                 setResult(Activity.RESULT_OK, returnintent);
-                finish();
+                finish();   //Return the object to the OnActivityResult in the MainActivity
             }
         });
     }
